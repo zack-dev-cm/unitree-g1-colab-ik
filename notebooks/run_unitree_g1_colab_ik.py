@@ -18,6 +18,19 @@ WORKDIR = Path("/content/unitree-g1-colab-ik")
 BATCH_SIZE = 256
 STEPS = 220
 
+REFERENCES = (
+    ("Unitree xr_teleoperate", "https://github.com/unitreerobotics/xr_teleoperate"),
+    ("G1 URDF asset path", "https://github.com/unitreerobotics/xr_teleoperate/tree/main/assets/g1"),
+    ("Google Colab FAQ", "https://research.google.com/colaboratory/faq.html"),
+    ("Project Jupyter docs", "https://docs.jupyter.org/en/latest/"),
+    (
+        "Ten simple rules for Jupyter notebooks",
+        "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007007",
+    ),
+    ("OpenAI Codex subagents", "https://developers.openai.com/codex/concepts/subagents"),
+    ("OpenAI harness engineering", "https://openai.com/index/harness-engineering/"),
+)
+
 
 def ensure_repo() -> None:
     if WORKDIR.exists():
@@ -39,6 +52,66 @@ def runtime_card() -> None:
     <div><b>torch</b> {torch.__version__}</div>
     <div><b>cuda</b> {torch.version.cuda}</div>
     <div><b>source</b> {REPO_URL}</div>
+  </div>
+</div>
+"""
+        )
+    )
+
+
+def section_header(title: str, body: str) -> None:
+    display(
+        HTML(
+            f"""
+<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;max-width:980px;margin:18px 0 8px">
+  <h2 style="margin:0;color:#102a43;font-size:24px">{title}</h2>
+  <p style="margin:6px 0 0;color:#486581;font-size:15px;line-height:1.55">{body}</p>
+</div>
+"""
+        )
+    )
+
+
+def context_card() -> None:
+    reference_links = "".join(
+        f'<li><a href="{url}" target="_blank" style="color:#0b7285;text-decoration:none">{label}</a></li>'
+        for label, url in REFERENCES
+    )
+    display(
+        HTML(
+            f"""
+<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;border:1px solid #d9e2ec;border-radius:12px;background:white;padding:18px 20px;max-width:980px;color:#243b53;margin-top:12px">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px">
+    <div>
+      <div style="font-size:13px;color:#627d98;text-transform:uppercase;letter-spacing:.08em">Study design</div>
+      <ul style="margin:9px 0 0 18px;padding:0;line-height:1.55">
+        <li>Downloads the Unitree G1 URDF from the upstream teleoperation repository.</li>
+        <li>Builds left and right torso-to-palm kinematic chains.</li>
+        <li>Samples reachable wrist targets from joint-limit-aware G1 poses.</li>
+        <li>Solves batched position-only IK with PyTorch on the Colab GPU.</li>
+      </ul>
+    </div>
+    <div>
+      <div style="font-size:13px;color:#627d98;text-transform:uppercase;letter-spacing:.08em">What this does not prove</div>
+      <ul style="margin:9px 0 0 18px;padding:0;line-height:1.55">
+        <li>No hardware execution, torque, latency, collision, or self-collision validation.</li>
+        <li>No wrist orientation target is scored; this is a position smoke test.</li>
+        <li>The target set is reachable by construction, so failures are solver or model regressions.</li>
+      </ul>
+    </div>
+    <div>
+      <div style="font-size:13px;color:#627d98;text-transform:uppercase;letter-spacing:.08em">Notebook organization</div>
+      <ul style="margin:9px 0 0 18px;padding:0;line-height:1.55">
+        <li>Keep one configuration cell near the top and record runtime versions.</li>
+        <li>Move reusable logic into importable modules; keep the notebook as a report.</li>
+        <li>Document input provenance, fixed seeds, metrics, limits, and pass/fail criteria.</li>
+        <li>Run from a clean runtime before publishing and keep outputs interpretable.</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top:16px;border-top:1px solid #edf2f7;padding-top:12px">
+    <div style="font-size:13px;color:#627d98;text-transform:uppercase;letter-spacing:.08em">References</div>
+    <ul style="columns:2;column-gap:28px;margin:9px 0 0 18px;padding:0;line-height:1.6">{reference_links}</ul>
   </div>
 </div>
 """
@@ -262,6 +335,7 @@ def assert_pass(summary) -> None:
 <div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;border-radius:12px;background:#edfdf7;border:1px solid #8eedc7;padding:18px 20px;max-width:920px;color:#014d40;margin-top:10px">
   <div style="font-size:26px;font-weight:850">PASS</div>
   <div style="margin-top:5px;font-size:15px">Unitree G1 Colab GPU IK benchmark passed for both arms with zero joint-limit violations.</div>
+  <div style="margin-top:9px;font-size:13px;line-height:1.5;color:#0b5d4f">Interpretation: this confirms the current GPU smoke test and visual report are healthy. Before using results for robot operation, extend the notebook with orientation targets, collision checks, latency measurements, and hardware-in-the-loop validation.</div>
 </div>
 """
         )
@@ -270,12 +344,28 @@ def assert_pass(summary) -> None:
 
 ensure_repo()
 runtime_card()
+context_card()
+section_header(
+    "Run the Unitree G1 IK workload",
+    "The solver uses the same sampled target set for both reporting and visual checks. Metrics are in centimeters so the threshold is easy to read in Colab output.",
+)
 details = run_solver()
 summary = summarize(details)
 summary_cards(summary)
 configure_plots()
+section_header(
+    "Error distribution",
+    "The bar chart compares mean, p95, and worst-case position error against the 2 cm target. The histograms show whether a result is stable or hiding a long tail.",
+)
 error_plots(summary, details)
+section_header(
+    "Spatial target check",
+    "Green points are requested wrist positions and orange points are the optimized wrist positions. Short connector lines indicate solved residuals.",
+)
 pose_plot(summary, details)
+section_header(
+    "Joint-limit margin",
+    "The heatmaps show average and worst-case remaining joint range after optimization. Low margins deserve review before more aggressive target generation.",
+)
 joint_margin_plot(summary, details)
 assert_pass(summary)
-
