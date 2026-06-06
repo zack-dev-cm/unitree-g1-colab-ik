@@ -113,7 +113,8 @@ def show_artifacts(report) -> None:
 
 
 ensure_repo()
-load_colab_secrets()
+if RUN_HERMES_AGENT:
+    load_colab_secrets()
 show_intro()
 
 from unitree_colab_ik.hermes_lab import LabConfig, render_cards_html, render_flow_svg, render_markdown_report, run_lab
@@ -136,4 +137,3 @@ show_references()
 
 display(Markdown("## Generated Report Preview"))
 display(Markdown(render_markdown_report(report)))
-
