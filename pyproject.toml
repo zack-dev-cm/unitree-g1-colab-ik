@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "unitree-g1-colab-ik"
+version = "0.1.0"
+description = "Colab GPU batched inverse-kinematics benchmark for Unitree G1 arm teleoperation"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "Open source contributors" }]
+keywords = ["unitree", "g1", "colab", "inverse-kinematics", "teleoperation", "pytorch"]
+dependencies = [
+  "torch>=2.2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+]
+
+[project.scripts]
+unitree-g1-ik-bench = "unitree_colab_ik.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
