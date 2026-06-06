@@ -8,7 +8,7 @@ import shutil
 import subprocess
 import sys
 
-from IPython.display import HTML, Markdown, display
+from IPython.display import HTML, display
 
 
 REPO_URL = "https://github.com/zack-dev-cm/unitree-g1-colab-ik.git"
@@ -117,7 +117,7 @@ if RUN_HERMES_AGENT:
     load_colab_secrets()
 show_intro()
 
-from unitree_colab_ik.hermes_lab import LabConfig, render_cards_html, render_flow_svg, render_markdown_report, run_lab
+from unitree_colab_ik.hermes_lab import LabConfig, render_cards_html, render_flow_svg, run_lab
 
 report = run_lab(
     LabConfig(
@@ -134,6 +134,3 @@ display(HTML(render_flow_svg()))
 display(HTML(render_cards_html(report)))
 show_artifacts(report)
 show_references()
-
-display(Markdown("## Generated Report Preview"))
-display(Markdown(render_markdown_report(report)))
