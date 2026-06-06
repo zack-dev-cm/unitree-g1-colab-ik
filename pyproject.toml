@@ -7,7 +7,7 @@ name = "unitree-g1-colab-ik"
 version = "0.1.0"
 description = "Colab GPU batched inverse-kinematics benchmark for Unitree G1 arm teleoperation"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.13"
 license = "MIT"
 authors = [{ name = "Open source contributors" }]
 keywords = ["unitree", "g1", "colab", "inverse-kinematics", "teleoperation", "pytorch"]
@@ -26,4 +26,3 @@ unitree-g1-ik-bench = "unitree_colab_ik.cli:main"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-

@@ -99,6 +99,8 @@ def solve_tracking_ik(
     u = chain.unconstrained_from_bounded(initial_q).detach().clone().requires_grad_(True)
     optimizer = torch.optim.Adam([u], lr=lr)
 
+    if chain.device == "cuda":
+        torch.cuda.synchronize()
     start = time.perf_counter()
     for _ in range(steps):
         optimizer.zero_grad(set_to_none=True)
@@ -178,4 +180,3 @@ def run_benchmark(
             )
         )
     return results
-

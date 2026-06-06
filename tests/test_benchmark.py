@@ -1,4 +1,5 @@
 import pytest
+from pathlib import Path
 
 torch = pytest.importorskip("torch")
 
@@ -6,11 +7,12 @@ from unitree_colab_ik.benchmark import build_chain, run_benchmark
 from unitree_colab_ik.urdf import load_urdf_path
 
 
-LOCAL_G1_URDF = "/home/z/Github/xr_teleoperate/assets/g1/g1_body29_hand14.urdf"
+G1_FIXTURE_URDF = Path(__file__).parent / "fixtures" / "g1_arm_fixture.urdf"
 
 
 def test_g1_arm_chain_has_expected_dof():
-    robot = load_urdf_path(LOCAL_G1_URDF)
+    assert G1_FIXTURE_URDF.exists()
+    robot = load_urdf_path(G1_FIXTURE_URDF)
     left = build_chain(robot, "left")
     right = build_chain(robot, "right")
 
@@ -26,7 +28,7 @@ def test_small_cpu_benchmark_converges():
         batch_size=12,
         steps=70,
         device="cpu",
-        urdf_path=LOCAL_G1_URDF,
+        urdf_path=str(G1_FIXTURE_URDF),
         success_threshold_m=0.03,
     )
 
@@ -34,4 +36,3 @@ def test_small_cpu_benchmark_converges():
     assert results[0].success_rate >= 0.90
     assert results[0].mean_error_m < 0.02
     assert results[0].limit_violation_rad <= 1e-6
-
