@@ -19,16 +19,23 @@ BATCH_SIZE = 256
 STEPS = 220
 
 REFERENCES = (
-    ("Unitree xr_teleoperate", "https://github.com/unitreerobotics/xr_teleoperate"),
-    ("G1 URDF asset path", "https://github.com/unitreerobotics/xr_teleoperate/tree/main/assets/g1"),
-    ("Google Colab FAQ", "https://research.google.com/colaboratory/faq.html"),
-    ("Project Jupyter docs", "https://docs.jupyter.org/en/latest/"),
     (
-        "Ten simple rules for Jupyter notebooks",
-        "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007007",
+        "Robot model",
+        (
+            ("Unitree xr_teleoperate", "https://github.com/unitreerobotics/xr_teleoperate"),
+            (
+                "G1 URDF asset",
+                "https://github.com/unitreerobotics/xr_teleoperate/tree/main/assets/g1",
+            ),
+        ),
     ),
-    ("OpenAI Codex subagents", "https://developers.openai.com/codex/concepts/subagents"),
-    ("OpenAI harness engineering", "https://openai.com/index/harness-engineering/"),
+    (
+        "Runtime",
+        (
+            ("Google Colab FAQ", "https://research.google.com/colaboratory/faq.html"),
+            ("PyTorch CUDA notes", "https://docs.pytorch.org/docs/stable/notes/cuda.html"),
+        ),
+    ),
 )
 
 
@@ -73,9 +80,16 @@ def section_header(title: str, body: str) -> None:
 
 
 def context_card() -> None:
-    reference_links = "".join(
-        f'<li><a href="{url}" target="_blank" style="color:#0b7285;text-decoration:none">{label}</a></li>'
-        for label, url in REFERENCES
+    reference_sections = "".join(
+        f"""
+    <div>
+      <div style="font-size:12px;color:#627d98;text-transform:uppercase;letter-spacing:.08em">{group}</div>
+      <ul style="margin:7px 0 0 18px;padding:0;line-height:1.55">
+        {''.join(f'<li><a href="{url}" target="_blank" style="color:#0b7285;text-decoration:none">{label}</a></li>' for label, url in links)}
+      </ul>
+    </div>
+"""
+        for group, links in REFERENCES
     )
     display(
         HTML(
@@ -100,18 +114,18 @@ def context_card() -> None:
       </ul>
     </div>
     <div>
-      <div style="font-size:13px;color:#627d98;text-transform:uppercase;letter-spacing:.08em">Notebook organization</div>
+      <div style="font-size:13px;color:#627d98;text-transform:uppercase;letter-spacing:.08em">Review gates</div>
       <ul style="margin:9px 0 0 18px;padding:0;line-height:1.55">
-        <li>Keep one configuration cell near the top and record runtime versions.</li>
-        <li>Move reusable logic into importable modules; keep the notebook as a report.</li>
-        <li>Document input provenance, fixed seeds, metrics, limits, and pass/fail criteria.</li>
-        <li>Run from a clean runtime before publishing and keep outputs interpretable.</li>
+        <li>Runtime gate: CUDA is available and the GPU, PyTorch, and CUDA versions are shown.</li>
+        <li>Metric gate: mean wrist error is below 1 cm and success rate is at least 98%.</li>
+        <li>Limit gate: optimized joints report zero limit violation.</li>
+        <li>Visual gate: summary cards, error tails, 3D residuals, and joint margins are reviewed together.</li>
       </ul>
     </div>
   </div>
   <div style="margin-top:16px;border-top:1px solid #edf2f7;padding-top:12px">
     <div style="font-size:13px;color:#627d98;text-transform:uppercase;letter-spacing:.08em">References</div>
-    <ul style="columns:2;column-gap:28px;margin:9px 0 0 18px;padding:0;line-height:1.6">{reference_links}</ul>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:9px">{reference_sections}</div>
   </div>
 </div>
 """

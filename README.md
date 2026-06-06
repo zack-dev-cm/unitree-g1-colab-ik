@@ -20,21 +20,16 @@ https://colab.research.google.com/github/zack-dev-cm/unitree-g1-colab-ik/blob/ma
 
 The notebook is designed to fail fast if CUDA is not available.
 
-## Notebook Structure
+## Review Gates
 
-The Colab is organized as a compact data-science report:
+The Colab output should be accepted only when the report clears these gates:
 
-- Description and scope: what the benchmark validates, and what it does not.
-- Environment: GPU, PyTorch, CUDA, source repository, and fixed runtime inputs.
-- Inputs and provenance: the upstream Unitree G1 URDF URL and generated target set.
-- Execution: a single parameterized IK workload for both arms.
-- Metrics: mean, p95, max error, success rate, throughput, and joint-limit margin.
-- Visual checks: summary cards, error plots, 3D target-vs-solved plots, and limit heatmaps.
-- Validation: assertive pass/fail criteria plus interpretation and next limitations.
-- References: upstream robot assets, Colab/Jupyter documentation, notebook practice, and review workflow links.
-
-Reusable logic stays in `src/unitree_colab_ik`; the notebook should remain an
-executable report rather than the only implementation.
+- Runtime gate: CUDA is available and the GPU, PyTorch, and CUDA versions are visible.
+- Provenance gate: the source repository, upstream G1 URDF URL, batch size, steps, and fixed seeds are declared in the run.
+- Metric gate: mean wrist error stays below 1 cm and success rate stays at or above 98%.
+- Limit gate: optimized joints report zero joint-limit violation.
+- Visual gate: summary cards, error tails, 3D residuals, and joint-limit margins are reviewed together.
+- Scope gate: the report explicitly labels hardware, orientation, collision, latency, and controller behavior as out of scope.
 
 ## Local Quickstart
 
@@ -76,9 +71,12 @@ The URDF remains owned by Unitree Robotics and is not vendored in this repo.
 
 ## References
 
-- Unitree `xr_teleoperate`: https://github.com/unitreerobotics/xr_teleoperate
-- Google Colab FAQ: https://research.google.com/colaboratory/faq.html
-- Project Jupyter documentation: https://docs.jupyter.org/en/latest/
-- Ten simple rules for writing and sharing computational analyses in Jupyter Notebooks: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007007
-- OpenAI Codex subagents: https://developers.openai.com/codex/concepts/subagents
-- OpenAI harness engineering: https://openai.com/index/harness-engineering/
+Robot model:
+
+- [Unitree `xr_teleoperate`](https://github.com/unitreerobotics/xr_teleoperate)
+- [G1 URDF asset folder](https://github.com/unitreerobotics/xr_teleoperate/tree/main/assets/g1)
+
+Runtime:
+
+- [Google Colab FAQ](https://research.google.com/colaboratory/faq.html)
+- [PyTorch CUDA notes](https://docs.pytorch.org/docs/stable/notes/cuda.html)
