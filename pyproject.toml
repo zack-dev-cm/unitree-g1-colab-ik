@@ -2,6 +2,9 @@
 requires = ["hatchling>=1.25"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/unitree_colab_ik"]
+
 [project]
 name = "unitree-g1-colab-ik"
 version = "0.1.0"
@@ -22,6 +25,7 @@ dev = [
 
 [project.scripts]
 unitree-g1-ik-bench = "unitree_colab_ik.cli:main"
+unitree-hermes-lab = "unitree_colab_ik.hermes_cli:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
